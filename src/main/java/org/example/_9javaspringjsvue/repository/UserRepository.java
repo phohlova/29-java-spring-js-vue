@@ -16,10 +16,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Проверка существования email при регистрации
     boolean existsByEmail(String email);
 
-    // Загрузка пользователя по email
-    Optional<User> findByEmailAndIsDeletedFalse(String email);
-
     // Поиск администраторов (для внутреннего использования)
     @Query("SELECT u FROM User u WHERE u.role = 'ADMIN'")
     List<User> findAllAdmins();
+
+    // Проверка роли пользователя
+    boolean existsByEmailAndRole(String email, String role);
 }
