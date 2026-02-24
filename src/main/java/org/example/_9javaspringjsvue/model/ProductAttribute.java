@@ -20,4 +20,6 @@ public class ProductAttribute {
     @JoinColumn(name = "attribute_id", nullable = false)
     private Attribute attribute;
 
+    @Column(nullable = false, length = 255)
+    private String value;
 }
