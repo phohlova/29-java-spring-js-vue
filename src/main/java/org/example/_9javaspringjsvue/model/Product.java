@@ -1,9 +1,11 @@
 package org.example._9javaspringjsvue.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -35,4 +37,8 @@ public class Product {
 
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<CartItem> cartItems;
 }
