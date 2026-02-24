@@ -1,4 +1,4 @@
-package org.example._9javaspringjsvue.model;
+package org.example._9javaspringjsvue.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -36,6 +36,5 @@ public class Review {
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<ReviewImage> images;
-
 
 }

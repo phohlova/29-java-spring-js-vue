@@ -1,8 +1,7 @@
-package org.example._9javaspringjsvue.model;
+package org.example._9javaspringjsvue.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.math.BigDecimal;
 

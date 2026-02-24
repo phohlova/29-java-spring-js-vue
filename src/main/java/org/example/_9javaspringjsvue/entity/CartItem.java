@@ -1,4 +1,4 @@
-package org.example._9javaspringjsvue.model;
+package org.example._9javaspringjsvue.entity;
 
 import jakarta.persistence.*;
 
