@@ -26,4 +26,6 @@ public interface ProductAttributeRepository extends JpaRepository<ProductAttribu
             "WHERE a.name = :attributeName AND pa.value = :value")
     List<Product> findProductsByAttributeValue(@Param("attributeName") String attributeName,
                                                @Param("value") String value);
+
+    List<ProductAttribute> findByAttributeNameAndValue(String attributeName, String attributeName1);
 }

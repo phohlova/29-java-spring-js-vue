@@ -19,7 +19,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT DISTINCT p FROM Product p " +
             "JOIN p.categories c " +
             "WHERE c.id = :categoryId OR c.parent.id = :categoryId")
-    Page<Product> findByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
+    Page<Product> findByCategoryId(@Param("categoryId") Long categoryId);
 
     // Сортировка по цене - сначала дешевле
     Page<Product> findAllByOrderByBasePriceAsc(Pageable pageable);
@@ -68,7 +68,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "WHERE EXISTS (SELECT 1 FROM Review r " +
             "WHERE r.product = p AND r.isDeleted = false " +
             "GROUP BY r.product HAVING AVG(r.rating) >= :minRating)")
-    Page<Product> findByMinRating(@Param("minRating") Double minRating, Pageable pageable);
+    List<Product> findByMinRating(@Param("minRating") Double minRating);
 
     // Найти товары без категории
     @Query("SELECT p FROM Product p WHERE SIZE(p.categories) = 0")
@@ -91,4 +91,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // Средняя оценка товара
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.product.id = :productId AND r.isDeleted = false")
     Double getAverageRating(@Param("productId") Long productId);
+
+    <T> Product findByIdWithCategoriesAndAttributes(Long attr0);
+
+    List<Product> findByCategoryIdOrderByPriceAsc(Long categoryId);
+
+    List<Product> findByCategoryIdOrderByPriceDesc(Long categoryId);
+
 }

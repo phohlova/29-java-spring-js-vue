@@ -39,4 +39,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Transactional
     @Query("UPDATE Review r SET r.isDeleted = true WHERE r.id = :id")
     int softDelete(@Param("id") Long id);
+
+    Double getAverageRating(Long id);
 }

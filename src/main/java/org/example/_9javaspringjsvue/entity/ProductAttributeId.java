@@ -25,4 +25,20 @@ public class ProductAttributeId implements Serializable {
     public int hashCode() {
         return 31 * productId.hashCode() + attributeId.hashCode();
     }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public Long getAttributeId() {
+        return attributeId;
+    }
+
+    public void setAttributeId(Long attributeId) {
+        this.attributeId = attributeId;
+    }
 }
