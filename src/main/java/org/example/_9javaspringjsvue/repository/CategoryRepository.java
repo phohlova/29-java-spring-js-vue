@@ -25,4 +25,12 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     // Найти все категории для drag-n-drop
     @Query("SELECT c FROM Category c ORDER BY c.sortOrder")
     List<Category> findAllOrdered();
+
+    List<Category> findAllByOrderBySortOrder();
+
+    Long countProductsInCategoryWithSubcategories(Long categoryId);
+
+    List<Category> findByParentId(Long parentId);
+
+    List<Category> findByParentIsNullOrderBySortOrder();
 }
