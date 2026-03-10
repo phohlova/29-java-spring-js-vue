@@ -3,9 +3,11 @@ package org.example._9javaspringjsvue.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.ZonedDateTime;
 
+@Data
 @Entity
 @Table(name = "users")
 public class User {

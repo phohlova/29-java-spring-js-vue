@@ -14,4 +14,6 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
     // Проверить существование корзины
     boolean existsByUser(User user);
+
+    Optional<Cart> findByUserId(Long userId);
 }

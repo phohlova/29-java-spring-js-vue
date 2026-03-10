@@ -1,101 +1,65 @@
 package org.example._9javaspringjsvue.repository;
 
 import org.example._9javaspringjsvue.entity.Product;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    // Найти товары по категории (с учётом подкатегорий)
-    @Query("SELECT DISTINCT p FROM Product p " +
-            "JOIN p.categories c " +
-            "WHERE c.id = :categoryId OR c.parent.id = :categoryId")
-    Page<Product> findByCategoryId(@Param("categoryId") Long categoryId);
 
-    // Сортировка по цене - сначала дешевле
-    Page<Product> findAllByOrderByBasePriceAsc(Pageable pageable);
+    // Товары категории
+    @Query("""
+        SELECT DISTINCT p FROM Product p 
+        JOIN p.categories c 
+        WHERE c.id = :categoryId
+    """)
+    List<Product> findByCategoryId(@Param("categoryId") Long categoryId);
 
-    // Сортировка по цене - сначала дороже
-    Page<Product> findAllByOrderByBasePriceDesc(Pageable pageable);
+    // Сортировка по цене (дешевле)
+    @Query("""
+        SELECT DISTINCT p FROM Product p 
+        JOIN p.categories c 
+        WHERE c.id = :categoryId 
+        ORDER BY p.basePrice ASC
+    """)
+    List<Product> findByCategoryIdOrderByPriceAsc(@Param("categoryId") Long categoryId);
 
-    // Поиск по названию товара
-    Page<Product> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+    // Сортировка по цене (дороже)
+    @Query("""
+        SELECT DISTINCT p FROM Product p 
+        JOIN p.categories c 
+        WHERE c.id = :categoryId 
+        ORDER BY p.basePrice DESC
+    """)
+    List<Product> findByCategoryIdOrderByPriceDesc(@Param("categoryId") Long categoryId);
 
-    //  Проверить наличие товара
-    @Query("SELECT p FROM Product p WHERE p.id = :id AND p.stockQuantity > 0")
-    Optional<Product> findAvailableById(@Param("id") Long id);
-
-    // Найти все товары в наличии
-    @Query("SELECT p FROM Product p WHERE p.stockQuantity > 0")
-    Page<Product> findAvailableProducts(Pageable pageable);
-
-    //  Проверить доступность для добавления в корзину
-    @Query("SELECT CASE WHEN p.stockQuantity > 0 THEN true ELSE false END FROM Product p WHERE p.id = :id")
-    boolean isAvailable(@Param("id") Long id);
-
-    // Уменьшить остаток товара при оформлении заказа
-    @Modifying
-    @Transactional
-    @Query("UPDATE Product p SET p.stockQuantity = p.stockQuantity - :quantity " +
-            "WHERE p.id = :productId AND p.stockQuantity >= :quantity")
-    int decreaseStock(@Param("productId") Long productId, @Param("quantity") Integer quantity);
-
-    // Проверить достаточность остатков
-    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p " +
-            "WHERE p.id = :productId AND p.stockQuantity >= :quantity")
-    boolean hasSufficientStock(@Param("productId") Long productId, @Param("quantity") Integer quantity);
-
-    // Найти товары по характеристике
-    @Query("SELECT p FROM Product p " +
-            "JOIN p.attributes pa " +
-            "JOIN pa.attribute a " +
-            "WHERE a.name = :attributeName AND pa.value = :value")
-    Page<Product> findByAttribute(@Param("attributeName") String attributeName,
-                                  @Param("value") String value,
-                                  Pageable pageable);
-
-    // Найти товары по минимальному рейтингу
-    @Query("SELECT p FROM Product p " +
-            "WHERE EXISTS (SELECT 1 FROM Review r " +
-            "WHERE r.product = p AND r.isDeleted = false " +
-            "GROUP BY r.product HAVING AVG(r.rating) >= :minRating)")
+    // Фильтр по оценке (через подзапрос)
+    @Query("""
+        SELECT p FROM Product p 
+        WHERE p.id IN (
+            SELECT r.product.id FROM Review r 
+            GROUP BY r.product.id 
+            HAVING AVG(r.rating) >= :minRating
+        )
+    """)
     List<Product> findByMinRating(@Param("minRating") Double minRating);
 
-    // Найти товары без категории
-    @Query("SELECT p FROM Product p WHERE SIZE(p.categories) = 0")
-    List<Product> findWithoutCategories();
+    // Наличие товара
+    List<Product> findByStockQuantityGreaterThan(int quantity);
 
-    // Найти товары с нулевым остатком
-    @Query("SELECT p FROM Product p WHERE p.stockQuantity = 0")
-    List<Product> findOutOfStock();
+    // Поиск по названию
+    List<Product> findByTitleContainingIgnoreCase(String title);
 
-    // Найти товары со скидкой
-    @Query("SELECT p FROM Product p WHERE p.discountPrice IS NOT NULL")
-    List<Product> findWithDiscount();
-
-    // Количество товаров в категории (с подкатегориями)
-    @Query("SELECT COUNT(DISTINCT p) FROM Product p " +
-            "JOIN p.categories c " +
-            "WHERE c.id = :categoryId OR c.parent.id = :categoryId")
-    Long countByCategoryId(@Param("categoryId") Long categoryId);
-
-    // Средняя оценка товара
-    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.product.id = :productId AND r.isDeleted = false")
-    Double getAverageRating(@Param("productId") Long productId);
-
-    <T> Product findByIdWithCategoriesAndAttributes(Long attr0);
-
-    List<Product> findByCategoryIdOrderByPriceAsc(Long categoryId);
-
-    List<Product> findByCategoryIdOrderByPriceDesc(Long categoryId);
-
+    // Карточка товара с категориями и атрибутами
+    @Query("""
+        SELECT DISTINCT p FROM Product p 
+        LEFT JOIN FETCH p.categories 
+        LEFT JOIN FETCH p.attributes 
+        WHERE p.id = :productId
+    """)
+    Product findByIdWithCategoriesAndAttributes(@Param("productId") Long productId);
 }

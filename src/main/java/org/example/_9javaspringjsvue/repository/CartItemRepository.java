@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
@@ -36,4 +37,10 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     @Query("SELECT SUM(p.basePrice * ci.quantity) FROM CartItem ci " +
             "JOIN ci.product p WHERE ci.cart.id = :cartId")
     Double calculateTotalAmount(@Param("cartId") Long cartId);
+
+    Integer countByCartId(Long cartId);
+
+    void deleteByCartId(Long cartId);
+
+    Optional<CartItem> findByCartIdAndProductId(Long cartId, Long cartId1);
 }
