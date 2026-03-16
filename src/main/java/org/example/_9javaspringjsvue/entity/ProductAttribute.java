@@ -2,9 +2,15 @@ package org.example._9javaspringjsvue.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "product_attributes")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductAttribute {
     @EmbeddedId
     private ProductAttributeId id;
@@ -20,38 +26,6 @@ public class ProductAttribute {
     @JoinColumn(name = "attribute_id", nullable = false)
     private Attribute attribute;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String value;
-
-    public ProductAttributeId getId() {
-        return id;
-    }
-
-    public void setId(ProductAttributeId id) {
-        this.id = id;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Attribute getAttribute() {
-        return attribute;
-    }
-
-    public void setAttribute(Attribute attribute) {
-        this.attribute = attribute;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 }

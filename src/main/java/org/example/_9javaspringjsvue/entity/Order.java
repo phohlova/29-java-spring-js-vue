@@ -2,11 +2,15 @@ package org.example._9javaspringjsvue.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -22,7 +26,8 @@ public class Order {
     private BigDecimal totalAmount;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @Column(name = "created_at")
     private ZonedDateTime createdAt;
@@ -30,4 +35,12 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<OrderItem> items;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = ZonedDateTime.now();
+        if (this.status == null) {
+            this.status = OrderStatus.NEW;
+        }
+    }
 }
