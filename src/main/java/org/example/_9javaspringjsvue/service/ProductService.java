@@ -10,10 +10,13 @@ import org.example._9javaspringjsvue.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -30,31 +33,29 @@ public class ProductService {
 
     /**
      * ТЗ: "Листинг товаров (главная страница)"
-     * Получение товаров категории с сортировкой и проверкой авторизации
+     * Получение товаров категории с сортировкой.
+     * Параметр isAuthorized нужен для расчета отображаемой цены в DTO.
      */
-    @Transactional(readOnly = true)
     public List<ProductDTO> getProductsByCategory(Long categoryId, String sort, Boolean isAuthorized) {
         List<Product> products;
 
         // ТЗ: "сортировка - сначала дешевле / сначала дороже"
         if ("price_asc".equals(sort)) {
-            products = productRepository.findByCategoryIdOrderByPriceAsc(categoryId);
+            products = productRepository.getProductsByCategoryOrderByPriceAsc(categoryId);
         } else if ("price_desc".equals(sort)) {
-            products = productRepository.findByCategoryIdOrderByPriceDesc(categoryId);
+            products = productRepository.getProductsByCategoryOrderByPriceDesc(categoryId);
         } else {
-            products = (List<Product>) productRepository.findByCategoryId(categoryId);
+            products = productRepository.getProductsByCategory(categoryId);
         }
 
-        // Преобразуем в DTO с расчётом цен
         return products.stream()
                 .map(product -> mapToDTO(product, isAuthorized))
                 .collect(Collectors.toList());
     }
 
     /**
-     * Получение всех товаров (для админки)
+     * Получение всех товаров (для админки или общего листинга без категории)
      */
-    @Transactional(readOnly = true)
     public List<ProductDTO> getAllProducts(Boolean isAuthorized) {
         List<Product> products = productRepository.findAll();
         return products.stream()
@@ -64,22 +65,27 @@ public class ProductService {
 
     /**
      * ТЗ: "Карточка товара"
-     * Получение детальной информации о товаре
+     * Получение детальной информации о товаре с категориями и атрибутами.
      */
-    @Transactional(readOnly = true)
     public ProductDTO getProductById(Long productId, Boolean isAuthorized) {
-        Product product = productRepository.findByIdWithCategoriesAndAttributes(productId);
+        Product product = productRepository.getProductWithDetails(productId);
+
+        if (product == null) {
+            throw new IllegalArgumentException("Товар с ID " + productId + " не найден");
+        }
 
         return mapToDTO(product, isAuthorized);
     }
 
     /**
      * ТЗ: "Фильтрация по оценке"
-     * Поиск товаров с минимальной оценкой
+     * Поиск товаров с минимальной оценкой.
      */
-    @Transactional(readOnly = true)
     public List<ProductDTO> findByMinRating(Double minRating, Boolean isAuthorized) {
-        List<Product> products = productRepository.findByMinRating(minRating);
+        if (minRating == null || minRating < 0 || minRating > 5) {
+            throw new IllegalArgumentException("Рейтинг должен быть от 0 до 5");
+        }
+        List<Product> products = productRepository.getProductsByMinRating(minRating);
         return products.stream()
                 .map(product -> mapToDTO(product, isAuthorized))
                 .collect(Collectors.toList());
@@ -87,12 +93,19 @@ public class ProductService {
 
     /**
      * ТЗ: "Поиск по характеристикам"
-     * Фильтрация товаров по атрибутам
+     * Фильтрация товаров по атрибутам (Например: Цвет=Красный).
      */
-    @Transactional(readOnly = true)
     public List<ProductDTO> findByAttributes(String attrName, String attrValue, Boolean isAuthorized) {
+        if (attrName == null || attrValue == null) {
+            return Collections.emptyList();
+        }
+
         List<ProductAttribute> productAttributes =
                 attributeRepository.findByAttributeNameAndValue(attrName, attrValue);
+
+        if (productAttributes.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         List<Long> productIds = productAttributes.stream()
                 .map(pa -> pa.getProduct().getId())
@@ -106,8 +119,8 @@ public class ProductService {
     }
 
     /**
-     * ТЗ: "Информация о наличии товара"
-     * Возвращает статус наличия
+     * ТЗ: "Информация о наличии товара" (п. 6.d)
+     * Возвращает статус наличия: "Нет в наличии", "Мало", "В наличии".
      */
     public String getAvailabilityStatus(Integer stockQuantity) {
         if (stockQuantity == null || stockQuantity == 0) {
@@ -120,46 +133,46 @@ public class ProductService {
     }
 
     /**
-     * ТЗ: "Кнопка В корзину (проверка наличия)"
-     * Проверка, можно ли добавить товар в корзину
+     * ТЗ: "Кнопка В корзину (проверка наличия)" (п. 6.f)
+     * Проверка, можно ли добавить товар в корзину в текущий момент.
      */
-    @Transactional(readOnly = true)
     public boolean canAddToCart(Long productId, Integer quantity) {
+        if (quantity <= 0) {
+            return false;
+        }
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Товар не найден"));
+                .orElseThrow(() -> new IllegalArgumentException("Товар не найден"));
 
-        // Проверяем, что товара достаточно на складе
         return product.getStockQuantity() >= quantity;
     }
 
     /**
      * ТЗ: "Уменьшение остатков при оформлении заказа"
-     * Уменьшение количества товара на складе
+     * Транзакционное уменьшение количества товара на складе.
      */
     @Transactional
     public void decreaseStock(Long productId, Integer quantity) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Товар не найден"));
+                .orElseThrow(() -> new IllegalArgumentException("Товар не найден"));
 
         if (product.getStockQuantity() < quantity) {
-            throw new RuntimeException("Недостаточно товара на складе");
+            throw new IllegalStateException("Недостаточно товара на складе для продукта: " + product.getTitle());
         }
 
         product.setStockQuantity(product.getStockQuantity() - quantity);
-        productRepository.save(product);
     }
 
     /**
-     * Получение средней оценки товара
+     * Получение средней оценки товара.
      */
-    @Transactional(readOnly = true)
     public Double getAverageRating(Long productId) {
-        return reviewRepository.getAverageRating(productId);
+        Double rating = reviewRepository.getAverageRating(productId);
+        return rating != null ? rating : 0.0;
     }
 
-
     /**
-     * Маппинг Entity → DTO с расчётом цены для пользователя
+     * Маппинг Entity → DTO с расчётом цены для пользователя.
+     * ТЗ п. 6.e: Если авторизован и есть скидка — показываем скидочную цену.
      */
     private ProductDTO mapToDTO(Product product, Boolean isAuthorized) {
         ProductDTO dto = new ProductDTO();
@@ -171,19 +184,21 @@ public class ProductService {
         dto.setDiscountPrice(product.getDiscountPrice());
         dto.setStockQuantity(product.getStockQuantity());
 
-        // ТЗ: "Цена для авторизованных/неавторизованных"
-        if (isAuthorized && product.getDiscountPrice() != null) {
-            dto.setPrice(product.getDiscountPrice());
+        BigDecimal displayPrice;
+        if (Boolean.TRUE.equals(isAuthorized) &&
+                product.getDiscountPrice() != null &&
+                product.getDiscountPrice().compareTo(BigDecimal.ZERO) > 0) {
+            displayPrice = product.getDiscountPrice();
         } else {
-            dto.setPrice(product.getBasePrice());
+            displayPrice = product.getBasePrice();
         }
+        dto.setPrice(displayPrice);
 
-        // ТЗ: "Информация о наличии"
+        // Статус наличия
         dto.setAvailabilityStatus(getAvailabilityStatus(product.getStockQuantity()));
 
         // Средняя оценка
-        Double avgRating = reviewRepository.getAverageRating(product.getId());
-        dto.setAverageRating(avgRating != null ? avgRating : 0.0);
+        dto.setAverageRating(getAverageRating(product.getId()));
 
         return dto;
     }
