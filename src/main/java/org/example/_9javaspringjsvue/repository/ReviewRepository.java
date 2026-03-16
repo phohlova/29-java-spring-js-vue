@@ -7,34 +7,28 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    // Отзывы товара
-    List<Review> findByProductIdOrderByCreatedAtDesc(Long productId);
+    // Только активные отзывы
+    List<Review> findByProductIdAndIsDeletedFalseOrderByCreatedAtDesc(Long productId);
 
-    // С пагинацией
-    Page<Review> findByProductIdOrderByCreatedAtDesc(Long productId, Pageable pageable);
+    // С пагинацией (только активные)
+    Page<Review> findByProductIdAndIsDeletedFalseOrderByCreatedAtDesc(Long productId, Pageable pageable);
 
-    // Фильтр по оценке
-    List<Review> findByProductIdAndRatingOrderByCreatedAtDesc(Long productId, Integer rating);
+    // Фильтр по оценке (только активные)
+    List<Review> findByProductIdAndRatingAndIsDeletedFalseOrderByCreatedAtDesc(Long productId, Integer rating);
 
-    // Средняя оценка товара
-    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.product.id = :productId AND r.isDeleted = false")
+    // Средняя оценка (исключая удаленные)
+    @Query("SELECT COALESCE(AVG(r.rating), 0.0) FROM Review r WHERE r.product.id = :productId AND r.isDeleted = false")
     Double getAverageRating(@Param("productId") Long productId);
 
-    // Количество отзывов
-    Long countByProductId(Long productId);
+    Long countByProductIdAndIsDeletedFalse(Long productId);
 
-    // Отзывы пользователя
     List<Review> findByUserId(Long userId);
 
-    // Удалённые отзывы (для админки)
+    // Для админки: все удаленные
     List<Review> findByIsDeletedTrue();
-
-    // Активные отзывы
-    List<Review> findByProductIdAndIsDeletedFalse(Long productId);
 }

@@ -10,7 +10,10 @@ import java.util.Optional;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
+    // Найти корневые категории (у которых нет родителя)
     List<Category> findByParentIsNullOrderBySortOrder();
+
+    // Найти дочерние категории конкретного родителя
     List<Category> findByParentOrderBySortOrder(Category parent);
 
     @Query("SELECT c FROM Category c WHERE c.parent.id = :parentId ORDER BY c.sortOrder")
