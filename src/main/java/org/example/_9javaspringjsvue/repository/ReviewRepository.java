@@ -1,42 +1,34 @@
 package org.example._9javaspringjsvue.repository;
 
-import jakarta.transaction.Transactional;
-import org.example._9javaspringjsvue.entity.Product;
 import org.example._9javaspringjsvue.entity.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
+import org.springframework.stereotype.Repository;
 import java.util.List;
 
+@Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    // Найти все отзывы товара
-    List<Review> findByProduct(Product product);
 
-    // Найти отзывы с пагинацией
-    Page<Review> findByProduct(Product product, Pageable pageable);
+    // Только активные отзывы
+    List<Review> findByProductIdAndIsDeletedFalseOrderByCreatedAtDesc(Long productId);
 
-    // Найти не удалённые отзывы
-    Page<Review> findByProductAndIsDeletedFalse(Product product, Pageable pageable);
+    // С пагинацией (только активные)
+    Page<Review> findByProductIdAndIsDeletedFalseOrderByCreatedAtDesc(Long productId, Pageable pageable);
 
-    // Фильтрация отзывов по оценке
-    Page<Review> findByProductAndRatingAndIsDeletedFalse(Product product,
-                                                         Integer rating,
-                                                         Pageable pageable);
+    // Фильтр по оценке (только активные)
+    List<Review> findByProductIdAndRatingAndIsDeletedFalseOrderByCreatedAtDesc(Long productId, Integer rating);
 
-    // Посчитать среднюю оценку товара
-    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.product = :product AND r.isDeleted = false")
-    Double getAverageRatingByProduct(@Param("product") Product product);
+    // Средняя оценка (исключая удаленные)
+    @Query("SELECT COALESCE(AVG(r.rating), 0.0) FROM Review r WHERE r.product.id = :productId AND r.isDeleted = false")
+    Double getAverageRating(@Param("productId") Long productId);
 
-    // Посчитать количество отзывов
-    long countByProductAndIsDeletedFalse(Product product);
+    Long countByProductIdAndIsDeletedFalse(Long productId);
 
-    // Удалить отзыв
-    @Modifying
-    @Transactional
-    @Query("UPDATE Review r SET r.isDeleted = true WHERE r.id = :id")
-    int softDelete(@Param("id") Long id);
+    List<Review> findByUserId(Long userId);
+
+    // Для админки: все удаленные
+    List<Review> findByIsDeletedTrue();
 }

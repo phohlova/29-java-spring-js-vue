@@ -10,15 +10,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     // Найти все товары в корзине
     List<CartItem> findByCart(Cart cart);
-
-    // Найти конкретный товар в корзине
-    CartItem findByCartAndProduct(Cart cart, Product product);
 
     // Проверить наличие товара в корзине
     boolean existsByCartAndProduct(Cart cart, Product product);
@@ -33,7 +32,13 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     Integer countTotalQuantityByCartId(@Param("cartId") Long cartId);
 
     // Посчитать общую сумму заказа
-    @Query("SELECT SUM(p.basePrice * ci.quantity) FROM CartItem ci " +
-            "JOIN ci.product p WHERE ci.cart.id = :cartId")
-    Double calculateTotalAmount(@Param("cartId") Long cartId);
+    @Query("SELECT SUM(CASE WHEN p.discountPrice IS NOT NULL AND p.discountPrice > 0 THEN p.discountPrice ELSE p.basePrice END * ci.quantity) " +
+            "FROM CartItem ci JOIN ci.product p WHERE ci.cart.id = :cartId")
+    BigDecimal calculateTotalAmount(@Param("cartId") Long cartId);
+
+    int countByCartId(Long cartId);
+
+    void deleteByCartId(Long cartId);
+
+    Optional<CartItem> findByCartIdAndProductId(Long cartId, Long cartId1);
 }
