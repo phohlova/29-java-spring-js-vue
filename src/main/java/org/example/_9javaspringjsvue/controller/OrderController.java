@@ -6,6 +6,8 @@ import org.example._9javaspringjsvue.repository.UserRepository;
 import org.example._9javaspringjsvue.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +30,7 @@ public class OrderController {
      * Повторная проверка наличия уменьшение остатков, очистка корзины
      * POST /api/orders
      */
+    @PostMapping
     public ResponseEntity<OrderDTO> createOrder(Authentication authentication) {
         Long userId = getCurrentUserId(authentication);
         return ResponseEntity.ok(orderService.createOrder(userId));
@@ -38,6 +41,7 @@ public class OrderController {
      * Получение списка заказов текущего пользователя
      * GET /api/orders
      */
+    @GetMapping
     public ResponseEntity<List<OrderDTO>> getMyOrders(Authentication authentication) {
         Long userId = getCurrentUserId(authentication);
         return ResponseEntity.ok(orderService.getUserOrders(userId));

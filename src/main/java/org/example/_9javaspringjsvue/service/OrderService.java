@@ -118,7 +118,7 @@ public class OrderService {
         cartService.clearCart(userId);
 
         // 5. Реальная отправка через JavaMailSender
-        try {
+        /** try {
             sendOrderConfirmationEmail(user, savedOrder);
             System.out.println("Письмо успешно отправлено на: " + user.getEmail());
         } catch (MessagingException e) {
@@ -126,6 +126,8 @@ public class OrderService {
             System.err.println("Ошибка при отправке email подтверждения: " + e.getMessage());
             throw new RuntimeException("Заказ оформлен, но не удалось отправить письмо на почту.", e);
         }
+*/
+        System.out.println("Заказ № " + savedOrder.getId() + " успешно оформлен");
 
         return mapToDTO(savedOrder);
     }
