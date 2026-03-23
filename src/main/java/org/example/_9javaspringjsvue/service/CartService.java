@@ -160,6 +160,10 @@ public class CartService {
                 .orElseThrow(() -> new RuntimeException("Товар в корзине не найден"));
 
         cartItemRepository.delete(cartItem);
+        cartItemRepository.flush();
+
+        Cart updatedCart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Корзина не найдена"));
 
         return mapToDTO(cartRepository.findByUserId(userId).orElseThrow());
     }

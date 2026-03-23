@@ -61,6 +61,7 @@ public class CartController {
      * Удаление товара из корзины
      * DELETE /api/cart/items/{itemId}
      */
+    @DeleteMapping("/items/{itemId}")
     public ResponseEntity<CartDTO> removeItem(@PathVariable Long itemId,
                                               Authentication authentication) {
         Long userId = getCurrentUserId(authentication);
