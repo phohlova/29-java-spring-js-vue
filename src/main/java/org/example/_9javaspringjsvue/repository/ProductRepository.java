@@ -35,8 +35,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // Карточка товара с деталями
     @Query("SELECT DISTINCT p FROM Product p " +
-            "LEFT JOIN FETCH p.categories " +
-            "LEFT JOIN FETCH p.attributes " +
+            "LEFT JOIN FETCH p.categories c " +
+            "LEFT JOIN p.attributes a " +
             "WHERE p.id = :productId")
     Product getProductWithDetails(@Param("productId") Long productId);
 }
