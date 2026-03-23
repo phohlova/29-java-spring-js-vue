@@ -58,7 +58,7 @@ public class AuthService {
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         // ТЗ: "Все пользователи, зарегистрированные через страницу регистрации, могут быть только простыми пользователями"
         user.setRole("USER");
-        user.setCreatedAt(ZonedDateTime.from(LocalDateTime.now()));
+        user.setCreatedAt(ZonedDateTime.now());
 
         userRepository.save(user);
 

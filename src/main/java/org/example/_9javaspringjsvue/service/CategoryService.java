@@ -100,8 +100,6 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
-
-
     /**
      * Рекурсивно строит дерево категорий
      */
