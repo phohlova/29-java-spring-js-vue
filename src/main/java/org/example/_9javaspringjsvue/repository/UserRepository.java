@@ -22,4 +22,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // Проверка роли пользователя
     boolean existsByEmailAndRole(String email, String role);
+
 }
