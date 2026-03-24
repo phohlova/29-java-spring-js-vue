@@ -92,10 +92,7 @@ public class CartService {
                 .orElseGet(() -> createCartForUser(userId));
 
         // 3. Найти товар в корзине
-        Optional<CartItem> existingItemOpt = cartItemRepository.findByCartIdAndProductId(
-                cart.getId(),
-                product.getId()
-        );
+        Optional<CartItem> existingItemOpt = cartItemRepository.findByCartAndProduct(cart, product);
 
         if (existingItemOpt.isPresent()) {
             CartItem existingItem = existingItemOpt.get();
