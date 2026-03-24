@@ -160,4 +160,55 @@ public class CartServiceTest {
         verify(cartRepository, never()).save(any(Cart.class));
         verify(cartItemRepository, never()).save(any(CartItem.class));
     }
+
+    @Test
+    void updateQuantity_ShouldSuccess_WhenValidQuantity() {
+        CartItem item = new CartItem();
+        item.setId(100L);
+        item.setCart(testCart);
+        item.setProduct(testProduct);
+        item.setQuantity(2);
+        testCart.getItems().add(item);
+
+        when(cartRepository.findByUserId(testUser.getId())).thenReturn(Optional.of(testCart));
+        when(cartItemRepository.findById(100L)).thenReturn(Optional.of(item));
+        when(cartItemRepository.save(any(CartItem.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        CartDTO result = cartService.updateQuantity(testUser.getId(), 100L, 5);
+
+        assertNotNull(result);
+        assertEquals(5, result.getTotalItems());
+        verify(cartItemRepository, times(1)).save(item);
+    }
+
+    @Test
+    void removeItem_ShouldSuccess_AndReturnEmptyCart() {
+        CartItem item = new CartItem();
+        item.setId(100L);
+        item.setCart(testCart);
+        item.setProduct(testProduct);
+
+        testCart.setItems(new ArrayList<>());
+        testCart.getItems().add(item);
+
+        when(cartRepository.findByUserId(testUser.getId())).thenReturn(Optional.of(testCart));
+
+        when(cartItemRepository.findById(100L)).thenReturn(Optional.of(item));
+
+        doAnswer(invocation -> {
+            CartItem deletedItem = invocation.getArgument(0);
+            testCart.getItems().remove(deletedItem);
+            return null;
+        }).when(cartItemRepository).delete(item);
+
+        CartDTO result = cartService.removeItem(testUser.getId(), 100L);
+
+        assertNotNull(result);
+
+        assertEquals(0, result.getItems().size(), "Список товаров должен быть пуст");
+        assertEquals(0, result.getTotalItems(), "Общее количество должно быть 0");
+        assertEquals(BigDecimal.ZERO, result.getTotalAmount(), "Сумма должна быть 0");
+
+        verify(cartItemRepository, times(1)).delete(item);
+    }
 }
