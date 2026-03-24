@@ -14,10 +14,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -95,4 +99,31 @@ public class AuthServiceTest {
         verify(userRepository, times(1)).save(any(User.class));
     }
 
+    @Test
+    public void login_ShouldThrowException_WhenInvalidCredentials() {
+        doThrow(new BadCredentialsException("Неверный пароль")).when(authenticationManager)
+                .authenticate(any(UsernamePasswordAuthenticationToken.class));
+
+        assertThrows(RuntimeException.class, () -> {
+            authService.login(loginRequest);
+        });
+    }
+
+    @Test
+    public void login_ShouldSuccess_WhenCredentialsValid() {
+        Authentication mockAuth = mock(Authentication.class);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(mockAuth);
+
+        UserDetails userDetails = mock(UserDetails.class);
+        when(userDetailsService.loadUserByUsername(loginRequest.getEmail())).thenReturn(userDetails);
+        when(userRepository.findByEmail(loginRequest.getEmail())).thenReturn(Optional.of(testUser));
+        when(jwtUtil.generateToken(userDetails)).thenReturn("valid_jwt_token");
+
+        AuthResponse response = authService.login(loginRequest);
+
+        assertNotNull(response);
+        assertEquals("valid_jwt_token", response.getToken());
+        assertEquals("Ivan", response.getFirstName());
+    }
 }
