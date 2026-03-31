@@ -160,6 +160,8 @@ public class ProductService {
         }
 
         product.setStockQuantity(product.getStockQuantity() - quantity);
+
+        productRepository.save(product);
     }
 
     /**

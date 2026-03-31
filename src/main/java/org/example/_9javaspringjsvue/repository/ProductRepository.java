@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -39,4 +40,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "LEFT JOIN p.attributes a " +
             "WHERE p.id = :productId")
     Product getProductWithDetails(@Param("productId") Long productId);
+
+    List<Product> findByCategoryIdOrderByBasePriceAsc(Long categoryId);
+
+    List<Product> findByCategoryIdOrderByBasePriceDesc(Long categoryId);
+
+    List<Product> findAllByOrderByBasePriceAsc();
+    List<Product> findAllByOrderByBasePriceDesc();
+
+
+    // Получение товара с деталями (категории + атрибуты)
+    @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.categories WHERE p.id = :id")
+    Optional<Product> findByIdWithCategories(@Param("id") Long id);
 }
