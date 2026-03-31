@@ -10,7 +10,6 @@ import java.util.List;
 
 @Entity
 @Data
-@NoArgsConstructor
 @Table(name = "carts")
 public class Cart {
     @Id
@@ -25,10 +24,11 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items = new ArrayList<>();
 
-
-    public int getTotalItemCount() {
-        return items.stream()
-                .mapToInt(CartItem::getQuantity)
-                .sum();
+    @Override
+    public String toString() {
+        return "Cart{" +
+                "id=" + id +
+                ", itemsCount=" + (items != null ? items.size() : 0) + // Лучше вывести только размер
+                '}';
     }
 }
