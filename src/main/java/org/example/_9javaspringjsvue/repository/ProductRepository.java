@@ -17,12 +17,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT DISTINCT p FROM Product p JOIN p.categories c WHERE c.id = :categoryId")
     List<Product> getProductsByCategory(@Param("categoryId") Long categoryId);
 
-    @Query("SELECT DISTINCT p FROM Product p JOIN p.categories c WHERE c.id = :categoryId ORDER BY p.basePrice ASC")
-    List<Product> getProductsByCategoryOrderByPriceAsc(@Param("categoryId") Long categoryId);
-
-    @Query("SELECT DISTINCT p FROM Product p JOIN p.categories c WHERE c.id = :categoryId ORDER BY p.basePrice DESC")
-    List<Product> getProductsByCategoryOrderByPriceDesc(@Param("categoryId") Long categoryId);
-
     // Фильтр по оценке
     @Query("SELECT p FROM Product p WHERE p.id IN (" +
             "SELECT r.product.id FROM Review r WHERE r.isDeleted = false GROUP BY r.product.id HAVING AVG(r.rating) >= :minRating)")
@@ -41,15 +35,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "WHERE p.id = :productId")
     Product getProductWithDetails(@Param("productId") Long productId);
 
-    List<Product> findByCategoryIdOrderByBasePriceAsc(Long categoryId);
+    List<Product> findByCategoriesIdOrderByBasePriceAsc(Long categoryId);
 
-    List<Product> findByCategoryIdOrderByBasePriceDesc(Long categoryId);
+    List<Product> findByCategoriesIdOrderByBasePriceDesc(Long categoryId);
 
-    List<Product> findAllByOrderByBasePriceAsc();
-    List<Product> findAllByOrderByBasePriceDesc();
-
-
-    // Получение товара с деталями (категории + атрибуты)
-    @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.categories WHERE p.id = :id")
-    Optional<Product> findByIdWithCategories(@Param("id") Long id);
+    @Query("SELECT p FROM Product p JOIN p.categories c WHERE c.id = :categoryId")
+    List<Product> findByCategoryId(Long categoryId);
 }

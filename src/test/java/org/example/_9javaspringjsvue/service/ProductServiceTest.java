@@ -87,7 +87,7 @@ class ProductServiceTest {
         List<Product> mockProductList = Arrays.asList(productCheap, productExpensive);
         Long categoryId = 1L;
 
-        when(productRepository.getProductsByCategoryOrderByPriceAsc(categoryId))
+        when(productRepository.findByCategoriesIdOrderByBasePriceAsc(categoryId))
                 .thenReturn(mockProductList);
 
         when(reviewRepository.getAverageRating(productCheap.getId())).thenReturn(4.5);
@@ -104,12 +104,13 @@ class ProductServiceTest {
     void getProductsByCategory_ShouldShowBasePrice_WhenNotAuthorized() {
         List<Product> products = Collections.singletonList(productCheap);
 
-        when(productRepository.getProductsByCategory(1L)).thenReturn(products);
+        when(productRepository.findByCategoryId(1L)).thenReturn(products);
         when(reviewRepository.getAverageRating(anyLong())).thenReturn(5.0);
 
         List<ProductDTO> result = productService.getProductsByCategory(1L, null, false);
 
         assertNotNull(result);
+        assertFalse(result.isEmpty(), "Список товаров не должен быть пустым");
 
         assertEquals(BigDecimal.valueOf(1000), result.get(0).getPrice());
         assertEquals(BigDecimal.valueOf(800), result.get(0).getDiscountPrice());

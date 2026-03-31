@@ -41,11 +41,11 @@ public class ProductService {
 
         // ТЗ: "сортировка - сначала дешевле / сначала дороже"
         if ("price_asc".equals(sort)) {
-            products = productRepository.getProductsByCategoryOrderByPriceAsc(categoryId);
+            products = productRepository.findByCategoriesIdOrderByBasePriceAsc(categoryId);
         } else if ("price_desc".equals(sort)) {
-            products = productRepository.getProductsByCategoryOrderByPriceDesc(categoryId);
+            products = productRepository.findByCategoriesIdOrderByBasePriceDesc(categoryId);
         } else {
-            products = productRepository.getProductsByCategory(categoryId);
+            products = productRepository.findByCategoryId(categoryId);
         }
 
         return products.stream()
