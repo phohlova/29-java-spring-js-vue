@@ -49,7 +49,7 @@ public class CartService {
     public CartDTO getCartByUserId(Long userId) {
         Optional<Cart> cartOpt = cartRepository.findByUserId(userId);
 
-        if (cartOpt.isEmpty()) {
+        if (!cartOpt.isPresent()) {
             // Если корзины нет — создаём новую
             Cart newCart = createCartForUser(userId);
             return mapToDTO(newCart);
@@ -66,7 +66,7 @@ public class CartService {
     public Integer getCartItemCount(Long userId) {
         Optional<Cart> cartOpt = cartRepository.findByUserId(userId);
 
-        if (cartOpt.isEmpty()) {
+        if (!cartOpt.isPresent()) {
             return 0;
         }
 
@@ -113,7 +113,8 @@ public class CartService {
         }
 
         // 4. Возвращаем обновлённую корзину
-        return mapToDTO(cartRepository.findByUserId(userId).orElseThrow());
+        return mapToDTO(cartRepository.findByUserId(userId).orElseThrow(()
+        -> new RuntimeException("Корзина не найдена")));
     }
 
     /**
@@ -141,7 +142,8 @@ public class CartService {
             cartItemRepository.save(cartItem);
         }
 
-        return mapToDTO(cartRepository.findByUserId(userId).orElseThrow());
+        return mapToDTO(cartRepository.findByUserId(userId).orElseThrow(()
+                -> new RuntimeException("Корзина не найдена")));
     }
 
     /**
@@ -162,7 +164,8 @@ public class CartService {
         Cart updatedCart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Корзина не найдена"));
 
-        return mapToDTO(cartRepository.findByUserId(userId).orElseThrow());
+        return mapToDTO(cartRepository.findByUserId(userId).orElseThrow(()
+                -> new RuntimeException("Корзина не найдена")));
     }
 
     /**

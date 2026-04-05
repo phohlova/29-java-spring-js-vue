@@ -6,11 +6,12 @@ import org.example._9javaspringjsvue.entity.*;
 import org.example._9javaspringjsvue.repository.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -147,13 +148,13 @@ public class OrderService {
     /**
      * Формирование и отправка HTML-письма
      */
-    private void sendOrderConfirmationEmail(User user, Order order) throws MessagingException {
+    private void sendOrderConfirmationEmail(User user, Order order) throws javax.mail.MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
 
         helper.setTo(user.getEmail());
         helper.setSubject("Подтверждение заказа №" + order.getId() + " в нашем магазине");
-        helper.setFrom("noreply@shop.com"); // Замените на ваш реальный email отправителя
+        helper.setFrom("noreply@shop.com");
 
         StringBuilder htmlContent = new StringBuilder();
         htmlContent.append("<html><body style='font-family: Arial, sans-serif; color: #333;'>");
@@ -196,7 +197,7 @@ public class OrderService {
 
         helper.setText(htmlContent.toString(), true); // true означает HTML-контент
 
-        mailSender.send(message);
+        mailSender.send((MimeMessagePreparator) message);
     }
 
     /**

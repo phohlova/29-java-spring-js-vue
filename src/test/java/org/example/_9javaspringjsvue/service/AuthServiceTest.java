@@ -23,7 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

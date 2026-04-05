@@ -1,6 +1,6 @@
 package org.example._9javaspringjsvue.repository;
 
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 import org.example._9javaspringjsvue.entity.Cart;
 import org.example._9javaspringjsvue.entity.CartItem;
 import org.example._9javaspringjsvue.entity.Product;

@@ -1,6 +1,6 @@
 package org.example._9javaspringjsvue.repository;
 
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 import org.example._9javaspringjsvue.entity.Review;
 import org.example._9javaspringjsvue.entity.ReviewImage;
 import org.springframework.data.jpa.repository.JpaRepository;

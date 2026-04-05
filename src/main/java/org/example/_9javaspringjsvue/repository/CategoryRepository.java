@@ -23,12 +23,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findAllByOrderBySortOrder();
     List<Category> findByNameContainingIgnoreCase(String name);
 
-    @Query("""
-        SELECT COUNT(DISTINCT p) 
-        FROM Product p 
-        JOIN p.categories c 
-        WHERE c.id = :categoryId 
-        OR c.parent.id = :categoryId
-    """)
+    @Query("SELECT COUNT(DISTINCT p) FROM Product p JOIN p.categories c WHERE c.id = :categoryId OR c.parent.id = :categoryId")
     Long countProductsInCategoryWithSubcategories(@Param("categoryId") Long categoryId);
 }

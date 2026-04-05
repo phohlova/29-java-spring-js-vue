@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.0.2</version>
+		<version>2.7.18</version>
 		<relativePath/>
 	</parent>
 	<groupId>org.example</groupId>
@@ -27,9 +27,9 @@
 		<url/>
 	</scm>
     <properties>
-        <java.version>17</java.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 	<dependencies>
 		<dependency>
@@ -53,7 +53,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webmvc</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -62,7 +62,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>annotationProcessor</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -83,41 +83,6 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-
-        <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-mail -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-mail</artifactId>
-            <version>4.0.1</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.mail</groupId>
-            <artifactId>jakarta.mail-api</artifactId>
-            <version>2.1.2</version>
-        </dependency>
-
-        <!-- Source: https://mvnrepository.com/artifact/org.eclipse.angus/angus-mail -->
-        <dependency>
-            <groupId>org.eclipse.angus</groupId>
-            <artifactId>angus-mail</artifactId>
-            <version>2.1.0-M1</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-            <version>6.1.5</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eclipse.angus</groupId>
-            <artifactId>jakarta.mail</artifactId>
-            <version>2.0.2</version>
-        </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -125,31 +90,24 @@
 
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>0.11.5</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
             <version>0.11.5</version>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
             <version>0.11.5</version>
-            <scope>runtime</scope>
         </dependency>
-        <!-- Source: https://mvnrepository.com/artifact/plexus/plexus-mail-sender-api -->
-        <dependency>
-            <groupId>plexus</groupId>
-            <artifactId>plexus-mail-sender-api</artifactId>
-            <version>1.0-alpha-2</version>
-            <scope>compile</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
         </dependency>
     </dependencies>
 
@@ -163,8 +121,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>

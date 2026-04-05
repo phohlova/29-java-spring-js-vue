@@ -1,6 +1,6 @@
 package org.example._9javaspringjsvue.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 

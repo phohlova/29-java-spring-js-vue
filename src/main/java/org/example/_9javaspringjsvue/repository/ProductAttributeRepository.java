@@ -1,6 +1,6 @@
 package org.example._9javaspringjsvue.repository;
 
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 import org.example._9javaspringjsvue.entity.Product;
 import org.example._9javaspringjsvue.entity.ProductAttribute;
 import org.example._9javaspringjsvue.entity.ProductAttributeId;

@@ -17,7 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -33,20 +33,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf().disable()
+                .cors().configurationSource(corsConfigurationSource())
+                .and()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/products/**").permitAll()
-                        .requestMatchers("/api/categories/**").permitAll()
-                        .requestMatchers("/api/reviews/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/cart/**").authenticated()
-                        .requestMatchers("/api/orders/**").authenticated()
+                        .antMatchers("/api/auth/**").permitAll()
+                        .antMatchers("/api/products/**").permitAll()
+                        .antMatchers("/api/categories/**").permitAll()
+                        .antMatchers("/api/reviews/**").permitAll()
+                        .antMatchers("/api/admin/**").hasRole("ADMIN")
+                        .antMatchers("/api/cart/**").authenticated()
+                        .antMatchers("/api/orders/**").authenticated()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -66,9 +67,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(Collections.singletonList("*"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
