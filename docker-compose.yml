@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   db:
@@ -15,7 +15,7 @@ services:
       - ./data.sql:/docker-entrypoint-initdb.d/data.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
 
@@ -30,8 +30,8 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 111
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_SQL_INIT_MODE: always
-      SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION: true
+      SPRING_SQL_INIT_MODE: never
+      SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION: "false"
     ports:
       - "8080:8080"
 
