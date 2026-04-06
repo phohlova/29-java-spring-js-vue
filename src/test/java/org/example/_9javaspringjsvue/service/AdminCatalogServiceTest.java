@@ -1,7 +1,17 @@
 package org.example._9javaspringjsvue.service;
 
-import org.example._9javaspringjsvue.entity.*;
-import org.example._9javaspringjsvue.repository.*;
+import org.example._9javaspringjsvue.entity.Attribute;
+import org.example._9javaspringjsvue.entity.Category;
+import org.example._9javaspringjsvue.entity.Product;
+import org.example._9javaspringjsvue.entity.ProductAttribute;
+import org.example._9javaspringjsvue.entity.ProductAttributeId;
+import org.example._9javaspringjsvue.entity.Review;
+import org.example._9javaspringjsvue.repository.AttributeRepository;
+import org.example._9javaspringjsvue.repository.CategoryRepository;
+import org.example._9javaspringjsvue.repository.ProductAttributeRepository;
+import org.example._9javaspringjsvue.repository.ProductRepository;
+import org.example._9javaspringjsvue.repository.ReviewImageRepository;
+import org.example._9javaspringjsvue.repository.ReviewRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

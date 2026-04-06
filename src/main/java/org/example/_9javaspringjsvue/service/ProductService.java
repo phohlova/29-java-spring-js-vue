@@ -1,7 +1,6 @@
 package org.example._9javaspringjsvue.service;
 
 import org.example._9javaspringjsvue.dto.ProductDTO;
-import org.example._9javaspringjsvue.dto.ProductAttributeDTO;
 import org.example._9javaspringjsvue.entity.Product;
 import org.example._9javaspringjsvue.entity.ProductAttribute;
 import org.example._9javaspringjsvue.repository.ProductRepository;

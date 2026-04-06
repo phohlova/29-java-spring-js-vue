@@ -2,15 +2,23 @@ package org.example._9javaspringjsvue.service;
 
 import org.example._9javaspringjsvue.dto.OrderDTO;
 import org.example._9javaspringjsvue.dto.OrderItemDTO;
-import org.example._9javaspringjsvue.entity.*;
-import org.example._9javaspringjsvue.repository.*;
+import org.example._9javaspringjsvue.entity.Cart;
+import org.example._9javaspringjsvue.entity.CartItem;
+import org.example._9javaspringjsvue.entity.Order;
+import org.example._9javaspringjsvue.entity.OrderItem;
+import org.example._9javaspringjsvue.entity.OrderStatus;
+import org.example._9javaspringjsvue.entity.Product;
+import org.example._9javaspringjsvue.entity.User;
+import org.example._9javaspringjsvue.repository.CartItemRepository;
+import org.example._9javaspringjsvue.repository.CartRepository;
+import org.example._9javaspringjsvue.repository.OrderRepository;
+import org.example._9javaspringjsvue.repository.UserRepository;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;

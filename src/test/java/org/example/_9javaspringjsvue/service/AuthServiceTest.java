@@ -1,6 +1,5 @@
 package org.example._9javaspringjsvue.service;
 
-import org.apache.catalina.UserDatabase;
 import org.example._9javaspringjsvue.dto.AuthResponse;
 import org.example._9javaspringjsvue.dto.LoginRequest;
 import org.example._9javaspringjsvue.dto.RegisterRequest;
@@ -23,8 +22,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
